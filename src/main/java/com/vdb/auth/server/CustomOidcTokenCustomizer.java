@@ -18,13 +18,12 @@ public class CustomOidcTokenCustomizer implements OAuth2TokenCustomizer<JwtEncod
 
     @Override
     public void customize(JwtEncodingContext context) {
-        if (context.getTokenType().getValue().equals("id_token")) {
-            Authentication authentication = context.getPrincipal();
-            // Ensure the principal is an instance of CustomUserDetails
-            if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-                // Set custom claims in the ID token
-                JwtClaimsSet.Builder claims = context.getClaims();
-                claims.claim("sub", userDetails.getUserId().toString());  // Set UUID as 'sub'
+        JwtClaimsSet.Builder claims = context.getClaims();
+        Authentication authentication = context.getPrincipal();
+        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+            // Set custom claims in the ID token
+            claims.claim("sub", userDetails.getUserId().toString());
+            if (context.getTokenType().getValue().equals("id_token")) {
                 claims.claim("username", userDetails.getUsername());
                 claims.claim("name", userDetails.getName());  // Add user's first name
                 claims.claim("surname", userDetails.getSurname());  // Add user's
